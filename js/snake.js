@@ -121,16 +121,18 @@ SNAKE.Snake = SNAKE.Snake || (function() {
             rowShift = [-1, 0, 1, 0],
             xPosShift = [],
             yPosShift = [],
-            snakeSpeed = 75,
+            snakeSpeed = 100,
             isDead = false,
             isPaused = false;
-        function getMode (mode, speed) {
-    document.getElementById(mode).addEventListener('click', function () { snakeSpeed = speed; });
-}
-            getMode('Easy', 100);
-            getMode('Medium', 75);
-            getMode('Difficult', 50);
+	
         // ----- public variables -----
+	me.speed = {
+	    easy: 150,
+	    medium: 100,
+	    difficult: 50,
+	    insane: 10
+	};
+	
         me.snakeBody = {};
         me.snakeBody["b0"] = new SnakeBlock(); // create snake head
         me.snakeBody["b0"].row = config.startRow || 1;
@@ -180,6 +182,7 @@ SNAKE.Snake = SNAKE.Snake || (function() {
             playingBoard.getBoardContainer().appendChild( tempBlock.elm );
             blockPool[blockPool.length] = tempBlock;
         }
+
         
         // ----- public methods -----
         
@@ -189,7 +192,11 @@ SNAKE.Snake = SNAKE.Snake || (function() {
         me.getPaused = function() {
             return isPaused;
         };
-        
+
+        me.getMode = function(mode, speed) {
+	    document.getElementById(mode).addEventListener('click', function () { snakeSpeed = speed; });
+	};
+	
         /**
         * This method is called when a user presses a key. It logs arrow key presses in "moveQueue", which is used when the snake needs to make its next move.
         * @method handleArrowKeys
@@ -396,6 +403,11 @@ SNAKE.Snake = SNAKE.Snake || (function() {
         // ---------------------------------------------------------------------
         // Initialize
         // ---------------------------------------------------------------------
+        me.getMode('Easy', me.speed.easy);
+        me.getMode('Medium', me.speed.medium);
+        me.getMode('Difficult', me.speed.difficult);	
+        me.getMode('INSANE', me.speed.insane);
+	
         createBlocks(growthIncr*2);
         xPosShift[0] = 0;
         xPosShift[1] = playingBoard.getBlockWidth();
@@ -816,7 +828,6 @@ SNAKE.Board = SNAKE.Board || (function() {
         * @method setupPlayingField
         */ 
         me.setupPlayingField = function () {
-            
             if (!elmPlayingField) {createBoardElements();} // create playing field
             
             // calculate width of our game container
@@ -886,12 +897,14 @@ SNAKE.Board = SNAKE.Board || (function() {
             myFood.randomlyPlaceFood();
             
             // setup event listeners
-            function getMode (mode, speed) {
-    document.getElementById(mode).addEventListener('click', function () { snakeSpeed = speed; });
-}
-            getMode('Easy', 100);
-            getMode('Medium', 75);
-            getMode('Difficult', 50);
+            // function getMode (mode, speed) {
+	    // 	document.getElementById(mode).addEventListener('click', function () { snakeSpeed = speed; });
+	    // }
+	    
+            mySnake.getMode('Easy', mySnake.speed.easy);
+            mySnake.getMode('Medium', mySnake.speed.medium);
+            mySnake.getMode('Difficult', mySnake.speed.difficult);
+            mySnake.getMode('INSANE', mySnake.speed.insane);
             myKeyListener = function(evt) {
                 if (!evt) var evt = window.event;
                 var keyNum = (evt.which) ? evt.which : evt.keyCode;
